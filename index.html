@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dokumentasi Irigasi</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f766e">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+:root{--bg:#f4f7f6;--card:#fff;--tx:#14231f;--mut:#5c6b66;--pri:#0f766e;--prt:#fff;--bd:#d3dcd9;--ok:#15803d;--dng:#b91c1c;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1715;--card:#18221f;--tx:#e6efec;--mut:#9bb0aa;--pri:#2dd4bf;--prt:#042f2a;--bd:#2c3b37;--ok:#4ade80;--dng:#f87171;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1715;--card:#18221f;--tx:#e6efec;--mut:#9bb0aa;--pri:#2dd4bf;--prt:#042f2a;--bd:#2c3b37;--ok:#4ade80;--dng:#f87171;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:12px 12px 84px}
+#app{max-width:720px;margin:auto}
+h1{font-size:1.3rem;margin:8px 0}
+.mut{color:var(--mut);font-size:.9rem}
+input,select,textarea{width:100%;min-height:48px;padding:10px;border:1px solid var(--bd);border-radius:10px;background:var(--card);color:var(--tx);font:inherit;margin:4px 0 12px}
+input[type=checkbox]{width:24px;min-height:24px;margin:0 12px 0 0}
+label{display:block;font-size:.9rem;color:var(--mut)}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 16px;border:1px solid var(--bd);border-radius:10px;background:var(--card);color:var(--tx);font:inherit;cursor:pointer;margin:0}
+.btn.pri{background:var(--pri);color:var(--prt);border-color:var(--pri)}
+.btn.ok{background:var(--ok);color:var(--prt);border-color:var(--ok)}
+.btn.dng{color:var(--dng)}
+.btn.big{width:100%}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px;margin:10px 0}
+.card.row{display:flex;align-items:center}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.chips input{width:auto;margin:0}
+.chip{min-height:40px;padding:0 14px;border:1px solid var(--bd);border-radius:20px;background:var(--card);color:var(--tx);font:inherit}
+.chip.on{background:var(--pri);color:var(--prt);border-color:var(--pri)}
+.bar{height:8px;background:var(--bd);border-radius:4px;overflow:hidden;margin:8px 0 4px}
+.bar i{display:block;height:100%;background:var(--pri)}
+.th{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.th img{width:76px;height:76px;object-fit:cover;border-radius:8px;border:1px solid var(--bd)}
+.file{padding:10px;border:1px solid var(--bd);border-radius:8px;font-size:.85rem}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 8px}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
+nav button{flex:1;min-height:56px;border:0;background:none;color:var(--mut);font:inherit;font-size:.85rem}
+nav button.on{color:var(--pri);font-weight:700}
+#ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10;align-items:center;justify-content:center;padding:16px}
+#ov.on{display:flex}
+.box{background:var(--card);border-radius:14px;padding:16px;max-width:520px;width:100%;max-height:90%;overflow:auto}
+.full{width:100%;max-height:65vh;object-fit:contain}
+#toast{position:fixed;left:12px;right:12px;bottom:72px;background:var(--tx);color:var(--bg);padding:12px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20;text-align:center}
+#toast.show{opacity:1}
+#toast.err{background:var(--dng);color:#fff}
+table{width:100%;border-collapse:collapse;font-size:.85rem}th,td{border:1px solid var(--bd);padding:6px;text-align:left;white-space:nowrap}
+</style>
+</head>
+<body>
+<div id="app">Memuat…</div>
+<nav>
+<button data-go="home">Beranda</button>
+<button data-go="form">Tambah</button>
+<button data-go="rep">Laporan</button>
+<button data-go="bak">Cadangan</button>
+</nav>
+<div id="ov"></div>
+<div id="toast"></div>
+<script>
+const MC={MC0:'MC0 (0%)',MC50:'MC50 (50%)',MC100:'MC100 (100%)'};
+const T={
+MC0:[['Dokumentasi Benchmark (BM)','photo'],['Dokumentasi Control Point (CP)','photo'],['Koordinat Base NTRIP','coord'],['Koordinat CP','coord'],['Data Long Section','file'],['Data Cross Section','file'],['Dokumentasi Kegiatan','photo'],['Dokumentasi per STA (interval 0+025)','photo']],
+MC50:[['Dokumentasi Kegiatan','photo'],['Dokumentasi Penggalian dan Penimbunan','photo'],['Dokumentasi Kondisi Lapangan','photo'],['Dokumentasi BM dan CP Berdiri','photo'],['Data Waterpass','file'],['Dokumentasi Batu Cor sebelum dimasukkan','photo'],['Dokumentasi Batu Cor sesudah dimasukkan','photo']],
+MC100:[['Dokumentasi Kegiatan','photo'],['Dokumentasi per STA','photo'],['Dokumentasi BM dan CP','photo'],['Data Hasil Long Section','file'],['Data Hasil Cross Section','file']]};
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fd=s=>s.split('-').reverse().join('/');
+const today=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+let S={p:'home',id:null,f:{q:'',mc:'',date:''},sel:new Set()},db,urls=[];
+const u=b=>{const x=URL.createObjectURL(b);urls.push(x);return x};
+function toast(m,err){const t=$('#toast');t.textContent=m;t.className='show'+(err?' err':'');clearTimeout(toast.h);toast.h=setTimeout(()=>t.className='',3500)}
+function go(p,id){S.p=p;S.id=id??null;render()}
+
+// ---------- IndexedDB ----------
+const opendb=()=>new Promise((res,rej)=>{const r=indexedDB.open('irigasi',1);r.onupgradeneeded=()=>{const d=r.result;d.createObjectStore('jobs',{keyPath:'id',autoIncrement:true});d.createObjectStore('items',{keyPath:'id',autoIncrement:true}).createIndex('job','job');const f=d.createObjectStore('files',{keyPath:'id',autoIncrement:true});f.createIndex('item','item');f.createIndex('job','job')};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+const rq=r=>new Promise((a,b)=>{r.onsuccess=()=>a(r.result);r.onerror=()=>b(r.error)});
+const st=(n,m='readonly')=>db.transaction(n,m).objectStore(n);
+const all=(n,i,v)=>rq(i?st(n).index(i).getAll(v):st(n).getAll());
+const put=(n,o)=>rq(st(n,'readwrite').put(o));
+const add=(n,o)=>rq(st(n,'readwrite').add(o));
+async function delJob(id){const t=db.transaction(['jobs','items','files'],'readwrite');t.objectStore('jobs').delete(id);for(const n of['items','files']){const s=t.objectStore(n);(await rq(s.index('job').getAllKeys(id))).forEach(k=>s.delete(k))}await new Promise((r,j)=>{t.oncomplete=r;t.onerror=()=>j(t.error)})}
+
+// ---------- UI helpers ----------
+function ask(msg){return new Promise(r=>{const o=$('#ov');o.innerHTML=`<div class="box"><p>${esc(msg)}</p><div class="row"><button class="btn" data-x="0">Batal</button><button class="btn pri" data-x="1">Ya</button></div></div>`;o.className='on';o.onclick=e=>{const b=e.target.closest('[data-x]');if(!b&&e.target!==o)return;o.className='';o.innerHTML='';r(!!b&&b.dataset.x==='1')}})}
+async function save(name,data){try{const d=await window.claude?.use?.('downloads');if(d)await d.save({filename:name,data});else{const b=data instanceof Blob?data:new Blob([data],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}toast('Berkas diunduh: '+name)}catch(e){if(e?.code!=='declined')toast('Gagal mengunduh: '+(e?.message||e),1)}}
+const b64=b=>new Promise((r,j)=>{const x=new FileReader();x.onload=()=>r(x.result);x.onerror=()=>j(x.error);x.readAsDataURL(b)});
+const d2b=s=>{const[h,b]=s.split(',');const m=h.match(/:(.*?);/)[1],t=atob(b),a=new Uint8Array(t.length);for(let i=0;i<t.length;i++)a[i]=t.charCodeAt(i);return new Blob([a],{type:m})};
+async function img(f,m,q){const b=await createImageBitmap(f);const s=Math.min(1,m/Math.max(b.width,b.height)),c=document.createElement('canvas');c.width=Math.round(b.width*s);c.height=Math.round(b.height*s);c.getContext('2d').drawImage(b,0,0,c.width,c.height);b.close&&b.close();return new Promise((r,j)=>c.toBlob(x=>x?r(x):j(new Error('foto gagal diproses')),'image/jpeg',q))}
+
+// ---------- Render ----------
+async function render(keep){
+ urls.splice(0).forEach(URL.revokeObjectURL);
+ document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.go===S.p||(S.p==='detail'&&b.dataset.go==='home')));
+ const a=$('#app'),y=scrollY;
+ try{
+  if(S.p==='home')await home(a);else if(S.p==='form')await form(a);else if(S.p==='detail')await detail(a);else if(S.p==='rep')await rep(a);else bak(a);
+ }catch(e){a.textContent='Terjadi kesalahan: '+e.message}
+ scrollTo(0,keep?y:0)
+}
+
+async function home(a){
+ a.innerHTML=`<h1>Dokumentasi Irigasi</h1><input id="q" placeholder="Cari nama D.I." value="${esc(S.f.q)}"><div class="chips">${['','MC0','MC50','MC100'].map(m=>`<button class="chip ${S.f.mc===m?'on':''}" data-mc="${m}">${m||'Semua'}</button>`).join('')}<input type="date" id="fdate" value="${S.f.date}" aria-label="Filter tanggal"></div><button class="btn pri big" data-go="form">+ Tambah Pekerjaan</button><div id="list"></div>`;
+ await list()}
+async function list(){
+ const[J,I]=await Promise.all([all('jobs'),all('items')]),f=S.f;
+ const r=J.filter(j=>(!f.q||j.di.toLowerCase().includes(f.q.toLowerCase()))&&(!f.mc||j.mc===f.mc)&&(!f.date||j.date===f.date)).sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+ $('#list').innerHTML=r.length?r.map(j=>{const it=I.filter(x=>x.job===j.id),d=it.filter(x=>x.done).length;return `<div class="card"><div data-open="${j.id}"><b>${esc(j.di)}</b><div class="mut">${MC[j.mc]} • ${fd(j.date)}</div><div class="bar"><i style="width:${it.length?d/it.length*100:0}%"></i></div><div class="mut">${d}/${it.length} selesai</div></div><div class="row"><button class="btn" data-open="${j.id}">Buka</button><button class="btn" data-edit="${j.id}">Edit</button><button class="btn dng" data-del="${j.id}">Hapus</button></div></div>`}).join(''):'<p class="mut">Belum ada pekerjaan.</p>'}
+
+async function form(a){
+ const j=S.id?await rq(st('jobs').get(S.id)):{di:'',date:today(),mc:'MC0',notes:''};
+ a.innerHTML=`<h1>${S.id?'Edit':'Tambah'} Pekerjaan</h1><label>Nama D.I.<input id="di" value="${esc(j.di)}"></label><label>Tanggal<input type="date" id="dt" value="${j.date}"></label><label>Jenis pekerjaan<select id="mc" ${S.id?'disabled':''}>${Object.entries(MC).map(([k,v])=>`<option value="${k}" ${k===j.mc?'selected':''}>${v}</option>`).join('')}</select></label><label>Catatan umum (opsional)<textarea id="nt" rows="3">${esc(j.notes)}</textarea></label><button class="btn pri big" data-save>Simpan</button>`}
+async function saveJob(){
+ const di=$('#di').value.trim(),date=$('#dt').value,notes=$('#nt').value.trim();
+ if(!di||!date)return toast('Nama D.I. dan tanggal wajib diisi',1);
+ try{
+  if(S.id){const j=await rq(st('jobs').get(S.id));Object.assign(j,{di,date,notes});await put('jobs',j);go('detail',S.id)}
+  else{const mc=$('#mc').value,id=await add('jobs',{di,date,mc,notes});for(const[t,k]of T[mc])await add('items',{job:id,title:t,kind:k,done:0,note:'',e:'',n:'',z:'',crs:''});go('detail',id)}
+ }catch(e){toast('Gagal menyimpan: '+e.message,1)}}
+
+async function detail(a){
+ const j=await rq(st('jobs').get(S.id));if(!j)return go('home');
+ const I=(await all('items','job',S.id)).sort((x,y)=>x.id-y.id),F=await all('files','job',S.id),d=I.filter(x=>x.done).length;
+ a.innerHTML=`<button class="btn" data-go="home">← Kembali</button><h1>${esc(j.di)}</h1><div class="mut">${MC[j.mc]} • ${fd(j.date)}</div>${j.notes?`<p>${esc(j.notes)}</p>`:''}<div class="bar"><i style="width:${I.length?d/I.length*100:0}%"></i></div><div class="mut">${d}/${I.length} selesai${d<I.length?' • draft (bisa dilanjutkan nanti)':''}</div>`+I.map(it=>itemHtml(it,F.filter(f=>f.item===it.id))).join('')}
+const ZN=[46,47,48,49,50,51,52,53,54];
+function crsOpts(v){const o=['WGS84',...ZN.map(z=>'WGS84 UTM Zona '+z+'N'),...ZN.map(z=>'WGS84 UTM Zona '+z+'S')];if(v&&!o.includes(v))o.push(v);return '<option value="">Pilih…</option>'+o.map(x=>`<option ${x===v?'selected':''}>${esc(x)}</option>`).join('')}
+function itemHtml(it,F){
+ let b='';
+ if(it.kind==='coord')b=`<div class="g2"><label>Easting<input inputmode="decimal" data-c="e" data-id="${it.id}" value="${esc(it.e)}"></label><label>Northing<input inputmode="decimal" data-c="n" data-id="${it.id}" value="${esc(it.n)}"></label><label>Elevasi<input inputmode="decimal" data-c="z" data-id="${it.id}" value="${esc(it.z)}"></label><label>Sistem koordinat<select data-c="crs" data-id="${it.id}">${crsOpts(it.crs)}</select></label></div>`;
+ else b=`<div class="th">${F.map(f=>f.thumb?`<img src="${u(f.thumb)}" alt="${esc(f.name)}" data-view="${f.id}">`:`<span class="file" data-view="${f.id}">${esc(f.name)}</span>`).join('')}</div><div class="row">`+(it.kind==='photo'?`<label class="btn">Kamera<input type="file" accept="image/*" capture="environment" hidden data-add="${it.id}"></label><label class="btn">Galeri<input type="file" accept="image/*" multiple hidden data-add="${it.id}"></label>`:`<label class="btn">Lampirkan CSV/XLSX/PDF<input type="file" accept=".csv,.xlsx,.pdf" multiple hidden data-add="${it.id}"></label>`)+`</div>`;
+ return `<div class="card"><b>${esc(it.title)}</b>${b}<label>Catatan<textarea rows="2" data-note="${it.id}">${esc(it.note)}</textarea></label><button class="btn ${it.done?'ok':''} big" data-tog="${it.id}">${it.done?'✓ Selesai':'Belum selesai (ketuk untuk selesai)'}</button></div>`}
+
+// ---------- Aksi checklist ----------
+async function met(it){if(it.kind==='coord')return[it.e,it.n,it.z,it.crs].every(v=>v!=='');return(await all('files','item',it.id)).length>0}
+async function tog(id){const it=await rq(st('items').get(id));
+ if(!it.done&&!(await met(it)))return toast(it.kind==='coord'?'Isi Easting, Northing, Elevasi, dan sistem koordinat dulu':it.kind==='file'?'Lampirkan berkas dulu':'Tambahkan minimal satu foto dulu',1);
+ it.done=it.done?0:1;await put('items',it);render(1)}
+async function recon(id){const it=await rq(st('items').get(id));if(it.done&&!(await met(it))){it.done=0;await put('items',it);return true}return false}
+async function addFiles(id,list){
+ const it=await rq(st('items').get(id));let n=0;
+ for(const f of list){try{
+  if(it.kind==='photo')await add('files',{item:id,job:it.job,name:f.name||'foto.jpg',type:'image/jpeg',blob:await img(f,1600,.82),thumb:await img(f,240,.7)});
+  else await add('files',{item:id,job:it.job,name:f.name,type:f.type||'application/octet-stream',blob:f});
+  n++}catch(e){toast('Gagal menyimpan '+(f.name||'berkas')+': '+(e.message||e),1)}}
+ if(n)toast(n+' berkas tersimpan');render(1)}
+async function view(id){
+ const f=await rq(st('files').get(id)),o=$('#ov'),im=f.type.startsWith('image/'),cl=()=>{o.className='';o.innerHTML=''};
+ o.innerHTML=`<div class="box">${im?`<img class="full" src="${u(f.blob)}" alt="">`:`<p>${esc(f.name)}</p>`}<div class="row"><button class="btn" data-x="c">Tutup</button>${im?'':'<button class="btn" data-sv>Simpan</button>'}<button class="btn dng" data-rm>Hapus</button></div></div>`;o.className='on';
+ o.onclick=async e=>{const t=e.target;
+  if(t===o||t.dataset.x)cl();
+  else if('sv' in t.dataset)save(f.name,f.blob);
+  else if('rm' in t.dataset){cl();if(await ask('Hapus berkas ini?')){await rq(st('files','readwrite').delete(id));await recon(f.item);render(1)}}}}
+
+// ---------- Laporan ----------
+async function rep(a){
+ const J=(await all('jobs')).sort((x,y)=>y.date.localeCompare(x.date));
+ a.innerHTML=`<h1>Laporan</h1>`+(J.length?`<p class="mut">Pilih pekerjaan:</p>`+J.map(j=>`<label class="card row"><input type="checkbox" data-sel="${j.id}" ${S.sel.has(j.id)?'checked':''}><span>${esc(j.di)}<br><small>${MC[j.mc]} • ${fd(j.date)}</small></span></label>`).join('')+`<div class="row"><button class="btn pri" data-csv>Ekspor CSV (Excel)</button><button class="btn pri" data-html>Laporan + foto</button></div><p class="mut">Laporan + foto berupa berkas HTML. Buka di browser, lalu cetak ke PDF (menu Cetak / Bagikan).</p>`:'<p class="mut">Belum ada pekerjaan.</p>')+await coordHtml()}
+async function coordRows(){const J=await all('jobs'),I=await all('items');return I.filter(i=>i.kind==='coord'&&(i.e||i.n||i.z)).map(i=>({j:J.find(j=>j.id===i.job),i})).filter(x=>x.j).sort((a,b)=>a.j.di.localeCompare(b.j.di)||a.j.date.localeCompare(b.j.date)||a.i.id-b.i.id)}
+async function coordHtml(){const R=await coordRows();return '<h1>Rekap Koordinat (semua D.I.)</h1>'+(R.length?`<div style="overflow-x:auto"><table><tr><th>D.I.</th><th>Tanggal</th><th>Titik</th><th>Easting</th><th>Northing</th><th>Z</th><th>Sistem</th></tr>${R.map(({j,i})=>`<tr><td>${esc(j.di)}</td><td>${fd(j.date)}</td><td>${esc(i.title.replace('Koordinat ',''))}</td><td>${esc(i.e)}</td><td>${esc(i.n)}</td><td>${esc(i.z)}</td><td>${esc(i.crs)}</td></tr>`).join('')}</table></div><div class="row"><button class="btn pri" data-ccsv>Ekspor CSV koordinat</button></div>`:'<p class="mut">Belum ada koordinat tersimpan.</p>')}
+async function coordCsv(){const R=await coordRows();if(!R.length)return toast('Belum ada koordinat',1);const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';const H=['D.I.','Tanggal','Tahap','Titik','Easting','Northing','Z','Sistem koordinat'];await save('rekap-koordinat.csv','\uFEFFsep=;\r\n'+[H,...R.map(({j,i})=>[j.di,j.date,j.mc,i.title.replace('Koordinat ',''),i.e,i.n,i.z,i.crs])].map(r=>r.map(q).join(';')).join('\r\n'))}
+async function dataFor(){
+ if(!S.sel.size){toast('Pilih pekerjaan dulu',1);return null}
+ const out=[];for(const id of S.sel){const j=await rq(st('jobs').get(id));if(j)out.push({j,I:(await all('items','job',id)).sort((a,b)=>a.id-b.id),F:await all('files','job',id)})}return out}
+async function csv(){
+ const D=await dataFor();if(!D)return;const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+ const R=[['D.I.','Tanggal','Tahap','Item','Status','Jumlah foto/berkas','Easting','Northing','Elevasi','Sistem koordinat','Catatan item','Catatan umum']];
+ for(const{j,I,F}of D)for(const it of I)R.push([j.di,j.date,j.mc,it.title,it.done?'Selesai':'Belum Selesai',F.filter(f=>f.item===it.id).length,it.e,it.n,it.z,it.crs,it.note,j.notes]);
+ await save('checklist-irigasi.csv','\uFEFFsep=;\r\n'+R.map(r=>r.map(q).join(';')).join('\r\n'))}
+async function html(){
+ const D=await dataFor();if(!D)return;
+ let h='<!doctype html><html lang="id"><meta charset="utf-8"><title>Laporan Dokumentasi Irigasi</title><style>body{font:14px sans-serif;max-width:800px;margin:auto;padding:16px}h2{border-bottom:2px solid #0f766e;padding-top:14px}.i{margin:10px 0}img{width:48%;margin:1%;break-inside:avoid}.ok{color:#15803d}</style><h1>Laporan Dokumentasi Irigasi</h1>';
+ try{
+  for(const{j,I,F}of D){h+=`<h2>${esc(j.di)} — ${MC[j.mc]} — ${fd(j.date)}</h2>${j.notes?`<p>${esc(j.notes)}</p>`:''}`;
+   for(const it of I){const fs=F.filter(f=>f.item===it.id);h+=`<div class="i"><b>${esc(it.title)}</b> — <span class="${it.done?'ok':''}">${it.done?'Selesai':'Belum Selesai'}</span>`;
+    if(it.kind==='coord'&&(it.e||it.n))h+=`<br>E ${esc(it.e)}, N ${esc(it.n)}, Elv ${esc(it.z)} (${esc(it.crs)})`;
+    if(it.note)h+=`<br><i>${esc(it.note)}</i>`;h+='<br>';
+    for(const f of fs)h+=f.type.startsWith('image/')?`<img src="${await b64(f.blob)}" alt="">`:`<br>Lampiran: ${esc(f.name)}`;
+    h+='</div>'}}
+ }catch(e){return toast('Gagal membuat laporan: '+e.message,1)}
+ await save('laporan-irigasi.html',h)}
+
+// ---------- Cadangan ----------
+function bak(a){a.innerHTML=`<h1>Cadangan</h1><p>Data tersimpan di browser HP ini. Buat cadangan berkala dan simpan berkasnya di tempat lain (Drive, WhatsApp, dll).</p><button class="btn pri big" data-bk>Buat cadangan (JSON)</button><p></p><label class="btn big">Pulihkan dari cadangan<input type="file" accept=".json" hidden id="rs"></label><p class="mut">Pemulihan hanya menambahkan data; data yang ada tidak ditimpa.</p>`}
+async function backup(){
+ try{const F=[];for(const f of await all('files'))F.push({...f,blob:await b64(f.blob),thumb:f.thumb?await b64(f.thumb):null});
+  await save('cadangan-irigasi-'+today()+'.json',JSON.stringify({v:1,J:await all('jobs'),I:await all('items'),F}))}catch(e){toast('Gagal membuat cadangan: '+e.message,1)}}
+async function restore(file){
+ try{const d=JSON.parse(await file.text()),jm={},im={};
+  for(const j of d.J){const o=j.id;delete j.id;jm[o]=await add('jobs',j)}
+  for(const i of d.I){const o=i.id;delete i.id;i.job=jm[i.job];im[o]=await add('items',i)}
+  for(const f of d.F){delete f.id;f.job=jm[f.job];f.item=im[f.item];f.blob=d2b(f.blob);if(f.thumb)f.thumb=d2b(f.thumb);await add('files',f)}
+  toast('Pemulihan selesai: '+d.J.length+' pekerjaan')}catch(e){toast('Gagal memulihkan: '+e.message,1)}}
+
+// ---------- Event ----------
+document.addEventListener('click',async e=>{
+ const t=e.target.closest('[data-go],[data-mc],[data-open],[data-edit],[data-del],[data-tog],[data-view],[data-save],[data-csv],[data-ccsv],[data-html],[data-bk]');if(!t)return;const d=t.dataset;
+ if(d.go)go(d.go);
+ else if('mc' in d){S.f.mc=d.mc;render(1)}
+ else if(d.open)go('detail',+d.open);
+ else if(d.edit)go('form',+d.edit);
+ else if(d.del){if(await ask('Hapus pekerjaan ini beserta semua foto dan datanya?')){try{await delJob(+d.del);S.sel.delete(+d.del);toast('Pekerjaan dihapus');render(1)}catch(x){toast('Gagal menghapus: '+x.message,1)}}}
+ else if(d.tog)tog(+d.tog);
+ else if(d.view)view(+d.view);
+ else if('save' in d)saveJob();
+ else if('csv' in d)csv();
+ else if('ccsv' in d)coordCsv();
+ else if('html' in d)html();
+ else if('bk' in d)backup()});
+document.addEventListener('input',e=>{if(e.target.id==='q'){S.f.q=e.target.value;list()}});
+document.addEventListener('change',async e=>{
+ const t=e.target,d=t.dataset;
+ if(t.id==='fdate'){S.f.date=t.value;list()}
+ else if(d.add){const L=[...t.files];t.value='';await addFiles(+d.add,L)}
+ else if(d.c){const it=await rq(st('items').get(+d.id));it[d.c]=t.value.trim();await put('items',it);if(await recon(it.id))render(1)}
+ else if(d.note){const it=await rq(st('items').get(+d.note));it.note=t.value.trim();await put('items',it)}
+ else if(d.sel){t.checked?S.sel.add(+d.sel):S.sel.delete(+d.sel)}
+ else if(t.id==='rs'&&t.files[0]){const f=t.files[0];t.value='';await restore(f)}});
+
+opendb().then(d=>{db=d;navigator.storage?.persist?.();render()}).catch(e=>{$('#app').textContent='Penyimpanan browser tidak tersedia: '+e.message});
+if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
