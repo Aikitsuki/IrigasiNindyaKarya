@@ -63,7 +63,7 @@ table{width:100%;border-collapse:collapse;font-size:.85rem}th,td{border:1px soli
 </nav>
 <div id="ov"></div>
 <div id="toast"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 const MC={MC0:'MC0 (0%)',MC50:'MC50 (50%)',MC100:'MC100 (100%)'};
 const T={
@@ -214,7 +214,7 @@ window.addEventListener('online',()=>sync(1));
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)sync(1)});
 
 async function acc(a){
- if(!sb)return a.innerHTML='<h1>Akun</h1><p>Sinkronisasi belum aktif: kunci Supabase belum diisi, atau pustaka belum termuat (butuh internet saat pertama dibuka).</p>';
+ if(!sb)return a.innerHTML='<h1>Akun</h1><p>Sinkronisasi belum aktif.</p><p class="mut">'+(!window.supabase?'Penyebab: pustaka Supabase gagal dimuat (butuh internet; tutup tab lalu buka lagi).':'Penyebab: kunci di index.html masih kosong/placeholder.')+'<br>Versi aplikasi: v4 • kunci terbaca: '+esc(SB_KEY.slice(0,18))+'…</p>';
  if(!user)return a.innerHTML=`<h1>Akun</h1><label>Email<input id="em" type="email" autocomplete="username"></label><label>Kata sandi (min. 6 karakter)<input id="pw" type="password" autocomplete="current-password"></label><div class="row"><button class="btn pri" data-acc="in">Masuk</button><button class="btn" data-acc="up">Daftar</button></div>`;
  let P=[],err='';
  try{const r=await sb.from('projects').select('id,name').is('deleted_at',null);if(r.error)throw r.error;P=r.data}catch(e){err='Tidak bisa memuat daftar proyek (offline?)'}
